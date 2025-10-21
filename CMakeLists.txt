@@ -39,6 +39,29 @@ if(WIN32)
             OpenGL::GLU
             $<IF:$<TARGET_EXISTS:FreeGLUT::freeglut>,FreeGLUT::freeglut,FreeGLUT::freeglut_static>
         )
+        # Try to locate the freeglut shared library file path
+        if(TARGET FreeGLUT::freeglut)
+            get_target_property(_freeglut_location FreeGLUT::freeglut LOCATION)
+        elseif(TARGET FreeGLUT::freeglut_static)
+            get_target_property(_freeglut_location FreeGLUT::freeglut_static LOCATION)
+        else()
+            set(_freeglut_location "")
+        endif()
+
+        if(NOT _freeglut_location)
+            # fallback: search common locations in PATH and vcpkg
+            find_library(_freeglut_lib NAMES freeglut freeglut_static PATHS "${CMAKE_BINARY_DIR}" NO_DEFAULT_PATH)
+            if(_freeglut_lib)
+                set(_freeglut_location ${_freeglut_lib})
+            endif()
+        endif()
+
+        if(_freeglut_location)
+            message(STATUS "Bundling freeglut runtime: ${_freeglut_location}")
+            install(FILES ${_freeglut_location} DESTINATION bin OPTIONAL)
+        else()
+            message(WARNING "freeglut library file was not found; installer will not include freeglut.dll")
+        endif()
     else()
         find_package(GLUT REQUIRED)
         target_link_libraries(doom-cpp 

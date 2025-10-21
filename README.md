@@ -41,6 +41,12 @@ Run doom-cpp binary:
 ./bin/doom-cpp
 ```
 
+> [!NOTE] 
+> On Windows the application depends on the FreeGLUT runtime (`freeglut.dll`). The installer will attempt to bundle `freeglut.dll` next to the executable when building on Windows (if the library was available at package time). If you see an error like "freeglut.dll not found" after installing, either:
+> - Reinstall the FreeGLUT runtime (e.g., install the FreeGLUT binary or use vcpkg to install the runtime), or
+> - Copy `freeglut.dll` into the same folder as `doom-cpp.exe`.
+
+
 ### ... with Docker
 
 This docker image will build and run the program for you.
