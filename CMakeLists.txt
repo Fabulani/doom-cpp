@@ -39,28 +39,26 @@ if(WIN32)
             OpenGL::GLU
             $<IF:$<TARGET_EXISTS:FreeGLUT::freeglut>,FreeGLUT::freeglut,FreeGLUT::freeglut_static>
         )
-        # Try to locate the freeglut shared library file path
+        
+        # Search for freeglut.dll
+        set(_freeglut_dll "")
         if(TARGET FreeGLUT::freeglut)
-            get_target_property(_freeglut_location FreeGLUT::freeglut LOCATION)
-        elseif(TARGET FreeGLUT::freeglut_static)
-            get_target_property(_freeglut_location FreeGLUT::freeglut_static LOCATION)
-        else()
-            set(_freeglut_location "")
-        endif()
-
-        if(NOT _freeglut_location)
-            # fallback: search common locations in PATH and vcpkg
-            find_library(_freeglut_lib NAMES freeglut freeglut_static PATHS "${CMAKE_BINARY_DIR}" NO_DEFAULT_PATH)
-            if(_freeglut_lib)
-                set(_freeglut_location ${_freeglut_lib})
+            get_target_property(_freeglut_dll FreeGLUT::freeglut IMPORTED_LOCATION_RELEASE)
+            if(NOT _freeglut_dll OR NOT EXISTS "${_freeglut_dll}")
+                get_target_property(_freeglut_dll FreeGLUT::freeglut LOCATION)
             endif()
         endif()
+        
+        # Fallback: search for DLL in common paths
+        if(NOT _freeglut_dll OR NOT EXISTS "${_freeglut_dll}")
+            find_file(_freeglut_dll NAMES freeglut.dll)
+        endif()
 
-        if(_freeglut_location)
-            message(STATUS "Bundling freeglut runtime: ${_freeglut_location}")
-            install(FILES ${_freeglut_location} DESTINATION bin OPTIONAL)
+        if(_freeglut_dll AND EXISTS "${_freeglut_dll}")
+            message(STATUS "Bundling freeglut runtime DLL: ${_freeglut_dll}")
+            install(FILES ${_freeglut_dll} DESTINATION bin OPTIONAL)
         else()
-            message(WARNING "freeglut library file was not found; installer will not include freeglut.dll")
+            message(WARNING "freeglut.dll was not found; installer will not include it")
         endif()
     else()
         find_package(GLUT REQUIRED)
