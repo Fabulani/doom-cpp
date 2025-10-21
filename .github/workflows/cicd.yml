@@ -30,9 +30,9 @@ jobs:
           cmake: true
           ninja: true
 
-      - name: Install Clang Tools (Linux)
+      - name: Install Dependencies (Linux)
         if: matrix.os == 'ubuntu-22.04'
-        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends clang-tidy clang-format
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends clang-tidy clang-format freeglut3-dev
 
       - name: Install Clang Tools (Windows)
         if: matrix.os == 'windows-2022'
