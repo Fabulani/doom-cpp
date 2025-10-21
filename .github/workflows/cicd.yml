@@ -34,9 +34,21 @@ jobs:
         if: matrix.os == 'ubuntu-22.04'
         run: sudo apt-get update && sudo apt-get install -y --no-install-recommends clang-tidy clang-format freeglut3-dev
 
-      - name: Install Dependencies (Windows)
+      - name: Install Clang Tools (Windows)
         if: matrix.os == 'windows-2022'
-        run: choco install llvm freeglut -y
+        run: choco install llvm -y
+
+      - name: Setup vcpkg (Windows)
+        if: matrix.os == 'windows-2022'
+        run: |
+          git clone https://github.com/microsoft/vcpkg.git C:\vcpkg
+          C:\vcpkg\bootstrap-vcpkg.bat
+          echo "VCPKG_ROOT=C:\vcpkg" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          echo "CMAKE_TOOLCHAIN_FILE=C:\vcpkg\scripts\buildsystems\vcpkg.cmake" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Install FreeGLUT (Windows)
+        if: matrix.os == 'windows-2022'
+        run: C:\vcpkg\vcpkg install freeglut:x64-windows
 
       - name: Configure CMake
         run: >
