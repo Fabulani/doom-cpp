@@ -78,7 +78,7 @@ else()  # Linux
     set(CPACK_DEBIAN_PACKAGE_DEPENDS "libc6 (>= 2.27), freeglut3, libgl1, libglu1-mesa")
 endif()
 
-set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.txt")
 set(CPACK_PACKAGE_VENDOR "Your Name")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "A Doom-style 3D game engine written in C++ with OpenGL")
 
