@@ -58,9 +58,11 @@ jobs:
           -G "Ninja"
 
       - name: Run clang-format check (formatter)
+        if: matrix.os == 'ubuntu-22.04'
         run: find src -name '*.cpp' -o -name '*.h' | xargs clang-format --dry-run --Werror
 
       - name: Run clang-tidy analysis (linter)
+        if: matrix.os == 'ubuntu-22.04'
         run: clang-tidy -p build src/*.cpp -- -std=c++17 -I./src
 
       - name: Install .NET SDK (required for WiX v4)
