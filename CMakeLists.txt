@@ -29,14 +29,32 @@ file(GLOB_RECURSE HEADERS "include/*.h" "include/*.hpp")
 add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
 
 find_package(OpenGL REQUIRED)
-find_package(GLUT REQUIRED)
 
-# Link libraries
-target_link_libraries(doom-cpp 
-    ${OPENGL_LIBRARIES} 
-    ${GLUT_LIBRARIES}
-    GLUT::GLUT
-)
+# Try FreeGLUT first (preferred for vcpkg on Windows), fallback to GLUT
+if(WIN32)
+    find_package(FreeGLUT CONFIG)
+    if(FreeGLUT_FOUND)
+        target_link_libraries(doom-cpp PRIVATE 
+            OpenGL::GL
+            OpenGL::GLU
+            $<IF:$<TARGET_EXISTS:FreeGLUT::freeglut>,FreeGLUT::freeglut,FreeGLUT::freeglut_static>
+        )
+    else()
+        find_package(GLUT REQUIRED)
+        target_link_libraries(doom-cpp 
+            ${OPENGL_LIBRARIES} 
+            ${GLUT_LIBRARIES}
+            GLUT::GLUT
+        )
+    endif()
+else()
+    find_package(GLUT REQUIRED)
+    target_link_libraries(doom-cpp 
+        ${OPENGL_LIBRARIES} 
+        ${GLUT_LIBRARIES}
+        GLUT::GLUT
+    )
+endif()
 
 # CPack configuration for installers
 include(InstallRequiredSystemLibraries)
